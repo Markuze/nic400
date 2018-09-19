@@ -1,0 +1,42 @@
+\section{Evaluation}
+This section describes the in-depth analysis of 16 micro-benchmark experiments.
+The experiments are partitioned into for sections; single core/multi-core and TCP/UDP.
+On single core we evaluate TX/RX and RR on multi-core we evaluate TX/RX and Bi-Directional traffic.
+
+\subsection{Single-core UDP}
+All single core tests are aimed to utilize 100\% of the CPU. In UDP-TX we have a single netperf flow sending 63KB datagrams. Using a dedicated memory allocator, boosts performance by 17.4\% in single core UDP TX experiment.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth]{figures/single_udp_tx_Bandwidth.pdf}
+\caption{\label{fig:s-u-tx} Dan, I know that the text on the graph is too small. Single-core UDP TX.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth]{figures/single_udp_tx_Ins_Packet.pdf}
+\caption{\label{fig:s-u-tx-ipp} Single-core UDP TX, Instructions per packet.}
+\end{figure}
+
+In the case of single UDP TX, the main benefit is from faster allocation API. In figure \ref{fig:s-u-tx-ipp} we see the number of instructions per packet. The instructions per packet has the inverse ratio to the B/W, with 3798 vs 3235 cycles to vanilla and \oursys respectively. Curiously, both kernel versions had an almost identical number of cycles per second at 2.6e+9. In table \ref{tab:s-u-tx-funcs} we see the break down of cycles per packet. It seems that the major bulk of the 563 cycles that are saved by \oursys per packet come from the myriad of small functions removed from the allocation path. The path a pakcet takes in the vanilla kernel has 224 functions than in \oursys. 
+\newline
+Conclusion, although the system with \oursys seems to show better l2 and llc utilization(not seen in the above discussion).
+The instructions per packet seem to provide the correct answer.
+
+\begin{table}
+\centering
+\begin{tabular}{l|r|r}
+Function & \oursys (3235)& vanilla (3798)\\\hline
+csum\_partial\_copy\_generic & 43.85\% (1419) & 35.2\% (1337)\\
+\_raw\_spinlock (\_\_dev\_queue\_xmit) & 4.75\% (153) & 4.45\% (169)\\
+mlx5\_xmit & 3.43\% (111) & 2.52\% (96)\\
+get\_page\_from\_free\_list & - & 2.43\% (92)\\
+ip\_append\_data & 1.95\% (63) & 1.66\% (63)\\
+alloc\_skb & 1.92\% (62) & 1.28\% (49)\\
+ip\_finish\_output2 & 1.77\% (57) & 1.60\% (61)\\
+mlx5\_poll\_tx\_cq & 1.64\% (53) & 1.40\% (53)\\
+\_\_free\_pages\_ok & - & 1.37\% (52)\\
+other & 59.31\% (1316) & 51.91\% (1826)
+\end{tabular}
+\caption{\label{tab:s-u-tx-funcs}Function breakdown.}
+\end{table}

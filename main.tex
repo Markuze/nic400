@@ -1,16 +1,24 @@
 \documentclass[sigplan,10pt]{acmart}
-\renewcommand\footnotetextcopyrightpermission[1]{}
 \pagestyle{plain}
 
-\title{nic400}
+\title{400 GB/E}
 \author{Markuze Alex}
 \date{September 2018}
 
-\settopmatter{printfolios=true}
+\newcommand{\oursys}{netalloc }
 
 \begin{document}
 
 \maketitle
 \section{Introduction}
+We evaluate , the effects of a dedicated memory allocator on the Linux network stack at 100Gb/s and beyond.
+We propose several optimizations which we evaluate rigorously in the next sections. We add a sclable cache for 64KB chunks of memory. The goal of this cache is to shortcut the cumbersome buddy allocator, gaining faster allocation on a single core and minimize contention on multicore. The cache is a generic magazine allocator.
+The second optimization we use is adding a page\_frag based, byte grained memory allocator. The page\_frag allocator optimizes cache access patterns.
+We also theorize that by using huge pages we can optimize the use of TLB and thus farther optimize the cycles/byte value.
+Throughout this work, we refer to the modified kernel with the set of optimizations as \oursys.
 
+\newpage
+\input{evaluation.tex}
+\settopmatter{printfolios=true}
+\renewcommand\footnotetextcopyrightpermission[1]{}
 \end{document}
