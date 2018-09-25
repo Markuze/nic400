@@ -43,5 +43,19 @@ other & 59.31\% (1316) & 51.91\% (1826)
 \caption{\label{tab:s-u-tx-funcs}Function breakdown.}
 \end{table}
 
+\begin{table}
+\centering
+\begin{tabular}{l|r|r}
+Function & \oursys (3235)& vanilla (3798)\\\hline
+csum\_partial\_copy\_generic & 50.09\% & 38.93\%\\
+alloc\_skb & 8.66\%  & 5.66\%\\
+mlx5\_napi & 6.35\% & 7.31\%\\
+\_raw\_spinlock (\_\_dev\_queue\_xmit) & 4.79\% & 5.28\%\\
+skb\_free\_head & 1.07\% & 3.06\% \\
+mlx5\_xmit & 4.00\% & 4.57\%\\
+other & 0 & 0\\
+\end{tabular}
+\caption{\label{tab:s-u-tx-funcs_child}Function breakdown with child.}
+\end{table}
 \subsection{Single UDP RR}
 The answer is a balance between better IPC and higher(!) instructions per packet. The higher instructions per packet is due do higher interrupt count. Faster processing leads to NAPI failing to keep up (need coraboration, with irq count and packet/irq).  
