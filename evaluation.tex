@@ -47,13 +47,12 @@ other & 59.31\% (1316) & 51.91\% (1826)
 \centering
 \begin{tabular}{l|r|r}
 Function & \oursys (3235)& vanilla (3798)\\\hline
-csum\_partial\_copy\_generic & 50.09\% & 38.93\%\\
-alloc\_skb & 8.66\%  & 5.66\%\\
-mlx5\_napi & 6.35\% & 7.31\%\\
-\_raw\_spinlock (\_\_dev\_queue\_xmit) & 4.79\% & 5.28\%\\
-skb\_free\_head & 1.07\% & 3.06\% \\
-mlx5\_xmit & 4.00\% & 4.57\%\\
-other & 0 & 0\\
+csum\_partial\_copy\_generic & 50.09\% (1620.4) & 38.93\%(1478.6)\\
+alloc\_skb & 5.66\% (183)& 8.66\% (328)\\
+mlx5\_napi & 6.35\% (205)& 7.31\%(277)\\
+\_raw\_spinlock (\_\_dev\_queue\_xmit) & 4.79\% (155) & 5.28\% (200)\\
+skb\_free\_head & 1.07 (35)\% & 3.06\% (116)\\
+other & 28.04\% (907)& 32.19\%(1222)\\
 \end{tabular}
 \caption{\label{tab:s-u-tx-funcs_child}Function breakdown with child.}
 \end{table}
