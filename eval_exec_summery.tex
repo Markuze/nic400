@@ -1,5 +1,7 @@
 \subsection{Summery of Results}
 Tables ~\ref{tab:exec-single} and summersize the micro-benchmark results and analysis.
+Multi TCP TX can reach 195Gb/s if only a single port is used from each NIC. The test changes only by using two dest ips instead of 4, only difference is the NIC and number of active WQEs.
+It may be the same culprit on TCB BI, the second port is used for RX instead  of TX. We separate the ports per direction, in order to avoid the delayed ack effect of bidir tcp.
 \begin{table*}
 \centering
 \begin{tabular}{l|c|c|c}
@@ -21,8 +23,9 @@ Multi UDP TX (Gb/s|CPU)& 147 | 100\% & 200 | 50\% &  Locking issues in vanilla\\
 Multi UDP RX (Gb/s|CPU)& 200 | 40\%  & 200 | 40\% & Equal results\\
 Multi UDP BI (Gb/s|CPU)& 240 | 100\% & 360 | 88\% &Locking in vanilla, \oursys limited by mem BW\\\hline
 Multi TCP TX (Gb/s)& 187.41|39.7\% & 187.7|37.37\% & (+6.4\%)better instructions per packet - (alloc\_skb)\\
-Multi TCP RX (Gb/s)& 200|46\% & 200|46\%& Equal results\\
-Multi TCP BI (pps)& 350|64.13\% & 350|61.29\%& Not clear why 400Gb/s not reached\\\hline
+Multi TCP RX (Gb/s)& 209|46\% & 209|46\%& Equal results\\
+Multi TCP BI (pps)& 350|64.13\% & 350(150+200)|61.29\%& Limited by memory B/W\\\hline
 \end{tabular}
 \caption{\label{tab:exec-multi}Multi-core results breakdown.}
 \end{table*}
+
