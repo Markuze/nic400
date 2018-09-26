@@ -4,6 +4,7 @@ The experiments are partitioned into for sections; single core/multi-core and TC
 On single core we evaluate TX/RX and RR on multi-core we evaluate TX/RX and Bi-Directional traffic.
 
 \input{eval_exec_summery.tex}
+\input{methodology.tex}
 
 \subsection{Single-core UDP}
 All single core tests are aimed to utilize 100\% of the CPU. In UDP-TX we have a single netperf flow sending 63KB datagrams. Using a dedicated memory allocator, boosts performance by 17.4\% in single core UDP TX experiment.
@@ -25,7 +26,7 @@ In the case of single UDP TX, the main benefit is from faster allocation API. In
 Conclusion, although the system with \oursys seems to show better l2 and llc utilization(not seen in the above discussion).
 The instructions per packet seem to provide the correct answer.
 
-\begin{table}
+\begin{table*}
 \centering
 \begin{tabular}{l|r|r}
 Function & \oursys (3235)& vanilla (3798)\\\hline
@@ -41,9 +42,9 @@ mlx5\_poll\_tx\_cq & 1.64\% (53) & 1.40\% (53)\\
 other & 59.31\% (1316) & 51.91\% (1826)
 \end{tabular}
 \caption{\label{tab:s-u-tx-funcs}Function breakdown.}
-\end{table}
+\end{table*}
 
-\begin{table}
+\begin{table*}
 \centering
 \begin{tabular}{l|r|r}
 Function & \oursys (3235)& vanilla (3798)\\\hline
@@ -55,6 +56,6 @@ skb\_free\_head & 1.07 (35)\% & 3.06\% (116)\\
 other & 28.04\% (907)& 32.19\%(1222)\\
 \end{tabular}
 \caption{\label{tab:s-u-tx-funcs_child}Function breakdown with child.}
-\end{table}
+\end{table*}
 \subsection{Single UDP RR}
 The answer is a balance between better IPC and higher(!) instructions per packet. The higher instructions per packet is due do higher interrupt count. Faster processing leads to NAPI failing to keep up (need coraboration, with irq count and packet/irq).  

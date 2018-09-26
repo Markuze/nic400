@@ -1,0 +1,27 @@
+\subsection{Methodology}
+We count the average cycles per function using perf. The changes needed or \oursys were integrated in just a few places. table lists these locations.
+
+\begin{table*}
+\centering
+\begin{tabular}{l|c|c}
+name & location & expected impact \\\hline
+mlx5e\_post\_rx\_wqes & mlx5 napi handler(IRQ) & RX\\
+\_\_alloc\_skb & net\/core & TX\\
+alloc\_skb\_with\_frags & TCP IN & TX\\
+skb\_page\_frag\_refill & net\/core & TX\\
+\_\_free\_pages & mem & all\\
+skb\_free\_head & mem & all\\
+alloc\_skb\_with\_frags & net\/core & TX\\
+sock\_\{dev\_\}wmalloc & IP OUT(\_\_ip\_append\_data) & TX\\
+sock\_\{dev\_\}alloc\_send\_pskb & IP OUT(\_\_ip\_append\_data)& TX\\
+sk\_stream\_alloc\_skb & TCP & TX\\
+\_\_netdev\_alloc\_skb & core & TX\\
+\_\_napi\_alloc\_skb & core & TX\\
+skb\_copy* & core & TX \\
+skb\_segment & core & TX\\
+
+
+\hline
+\end{tabular}
+\caption{\label{tab:func_list}Modified Functions}
+\end{table*}

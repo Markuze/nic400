@@ -20,7 +20,7 @@ Single TCP RR (pps)& 176.6 & 185.2 (+5.1\%)& instructions per packet\\\hline
 \begin{tabular}{l|c|c|c}
 Experiment & vanilla & \oursys & reason\\\hline
 Multi UDP TX (Gb/s|CPU)& 147 | 100\% & 200 | 50\% &  Locking issues in vanilla\\
-Multi UDP RX (Gb/s|CPU)& 200 | 40\%  & 200 | 40\% & Equal results\\
+Multi UDP RX (Gb/s|CPU)& 200 |  40\%  & 200 | 40\% & Equal results\\
 Multi UDP BI (Gb/s|CPU)& 240 | 100\% & 360 | 88\% &Locking in vanilla, \oursys limited by mem BW\\\hline
 Multi TCP TX (Gb/s)& 187.41|39.7\% & 187.7|37.37\% & (+6.4\%)better instructions per packet - (alloc\_skb)\\
 Multi TCP RX (Gb/s)& 209|46\% & 209|46\%& Equal results\\
