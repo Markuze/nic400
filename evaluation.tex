@@ -21,41 +21,25 @@ All single core tests are aimed to utilize 100\% of the CPU. In UDP-TX we have a
 \caption{\label{fig:s-u-tx-ipp} Single-core UDP TX, Instructions per packet.}
 \end{figure}
 
-In the case of single UDP TX, the main benefit is from faster allocation API. In figure \ref{fig:s-u-tx-ipp} we see the number of instructions per packet. The instructions per packet has the inverse ratio to the B/W, with 3798 vs 3235 cycles to vanilla and \oursys respectively. Curiously, both kernel versions had an almost identical number of cycles per second at 2.6e+9. In table \ref{tab:s-u-tx-funcs} we see the break down of cycles per packet. It seems that the major bulk of the 563 cycles that are saved by \oursys per packet come from the myriad of small functions removed from the allocation path. The path a pakcet takes in the vanilla kernel has 224 functions than in \oursys. 
-\newline
+In the case of single UDP TX, the main benefit is from faster allocation API. In figure \ref{fig:s-u-tx-ipp} we see the number of instructions per packet. The instructions per packet has the inverse ratio to the B/W, with - vs 3894 cycles to vanilla and \oursys respectively. In table \ref{tab:s-u-tx-funcs_child} we see the break down of cycles per packet. It seems that the major bulk of the cycles that are saved by \oursys per packet come from a shorter allocation path. Table \ref{tab:s-u-tx-funcs_child} breaks down the per cycle cost. The process of collecting perf measurements has a noticable side effect on the test, around 10\% degradation in performance. Due to this limitation we can only reliably count the packets, irqs and cycles during the test. Other perf status/pcm measurements are not reliable when looked at in conjunction with perf record, as these tests don't seem to have noticeable side effects.
+The system is running with turbo mode, with \oursys running at 2.953GHZ and vanilla running at 3.002GHZ with nominal CPU at 2GHZ. This amounts to 1.66\% difference in clock speed. With perf \oursys has sent 742054 packets vs 633969 of vanilla, a 17\% improvement. During this test \oursys has experienced 57834 interrupts vs 56955 by vanilla, a 1.5\% difference. These numbers correspond to 12.8 and 10.96 packets per interrupt per tested system, both well below the NAPI budget. 
 Conclusion, although the system with \oursys seems to show better l2 and llc utilization(not seen in the above discussion).
 The instructions per packet seem to provide the correct answer.
 
 \begin{table*}
 \centering
-\begin{tabular}{l|r|r}
-Function & \oursys (3235)& vanilla (3798)\\\hline
-csum\_partial\_copy\_generic & 43.85\% (1419) & 35.2\% (1337)\\
-\_raw\_spinlock (\_\_dev\_queue\_xmit) & 4.75\% (153) & 4.45\% (169)\\
-mlx5\_xmit & 3.43\% (111) & 2.52\% (96)\\
-get\_page\_from\_free\_list & - & 2.43\% (92)\\
-ip\_append\_data & 1.95\% (63) & 1.66\% (63)\\
-alloc\_skb & 1.92\% (62) & 1.28\% (49)\\
-ip\_finish\_output2 & 1.77\% (57) & 1.60\% (61)\\
-mlx5\_poll\_tx\_cq & 1.64\% (53) & 1.40\% (53)\\
-\_\_free\_pages\_ok & - & 1.37\% (52)\\
-other & 59.31\% (1316) & 51.91\% (1826)
-\end{tabular}
-\caption{\label{tab:s-u-tx-funcs}Function breakdown.}
-\end{table*}
-
-\begin{table*}
-\centering
-\begin{tabular}{l|r|r}
-Function & \oursys (3235)& vanilla (3798)\\\hline
-csum\_partial\_copy\_generic & 50.09\% (1620.4) & 38.93\%(1478.6)\\
-alloc\_skb & 5.66\% (183)& 8.66\% (328)\\
-mlx5\_napi & 6.35\% (205)& 7.31\%(277)\\
-\_raw\_spinlock (\_\_dev\_queue\_xmit) & 4.79\% (155) & 5.28\% (200)\\
-skb\_free\_head & 1.07 (35)\% & 3.06\% (116)\\
-other & 28.04\% (907)& 32.19\%(1222)\\
+\begin{tabular}{l|r|r|r}
+Function & \oursys (3980)& vanilla (4736) & delta (756)\\\hline
+csum\_partial\_copy\_generic* & 47.02\% (1871) & 35.24\% (1669)& -11\% -202\\
+udp\_send\_skb & 22.51\% (896)& 22.36\% (1059) & +18.2\% +163\\
+ret\_from\_intr & 11.09\% (441)& 20.03\% (949) & +115\% +508\\
+alloc\_skb & 5.9\% (235)& 9.06\% (429)& +83\% +194\\
+alloc\_skb\_with\_frags* & 0.12\% (4)& 0.09\% (4)& -\\
+other & 13.36\%(532)& 13.22\% (626)& +17.7\% +94\\\hline
+skb\_release\_all & 4.11\% (164) & 10.45\% (495)& +202\% +331\\\hline
 \end{tabular}
 \caption{\label{tab:s-u-tx-funcs_child}Function breakdown with child.}
 \end{table*}
+
 \subsection{Single UDP RR}
 The answer is a balance between better IPC and higher(!) instructions per packet. The higher instructions per packet is due do higher interrupt count. Faster processing leads to NAPI failing to keep up (need coraboration, with irq count and packet/irq).  
