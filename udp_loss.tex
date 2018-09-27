@@ -37,10 +37,17 @@ Possible things that maybe beneficial to look at, table \ref{tab:open_issues}.
 \begin{tabular}{l|l}
 Issue & difficulty/impact \\\hline
 Huge pages in \oursys & Few days of work expected <+5\% improved performance \\
-Inline functions & a known issue in the Linux community, a small study maybe n order\\
+Inline functions & a known issue in the Linux community, a small study maybe in order\\
 PFC & PFC has an impact on TCP performance, never looked at why\\
 ad hoc driver memory reuse & motivation?\\
+ad hoc NAPI budget & minor but could be interesting\\
 UDP fragment losses & Not sure there is a resolution in SW\\
+lock in TX queue & if were dealing with locks alreaady...\\
+coalescing & with higher rates may be its time to reveisit?\\
+New Theory: Add triger to NAPI call with TX Ring watermarks? & Awsome for TX and should also work for TCP\\
+Is send more used? & batching in send, could show up to +5\%\\
+TCP flows & why more than one flow needed to saturate single core?\\
+
 \hline
 \end{tabular}
 \caption{\label{tab:open_issues}Open issues}

@@ -24,12 +24,12 @@ All single core tests are aimed to utilize 100\% of the CPU. In UDP-TX we have a
 In the case of single UDP TX, the main benefit is from faster allocation API. In figure \ref{fig:s-u-tx-ipp} we see the number of instructions per packet. The instructions per packet has the inverse ratio to the B/W, with - vs 3894 cycles to vanilla and \oursys respectively. In table \ref{tab:s-u-tx-funcs_child} we see the break down of cycles per packet. It seems that the major bulk of the cycles that are saved by \oursys per packet come from a shorter allocation path. Table \ref{tab:s-u-tx-funcs_child} breaks down the per cycle cost. The process of collecting perf measurements has a noticable side effect on the test, around 10\% degradation in performance. Due to this limitation we can only reliably count the packets, irqs and cycles during the test. Other perf status/pcm measurements are not reliable when looked at in conjunction with perf record, as these tests don't seem to have noticeable side effects.
 The system is running with turbo mode, with \oursys running at 2.953GHZ and vanilla running at 3.002GHZ with nominal CPU at 2GHZ. This amounts to 1.66\% difference in clock speed. With perf \oursys has sent 742054 packets vs 633969 of vanilla, a 17\% improvement. During this test \oursys has experienced 57834 interrupts vs 56955 by vanilla, a 1.5\% difference. These numbers correspond to 12.8 and 10.96 packets per interrupt per tested system, both well below the NAPI budget. 
 Conclusion, although the system with \oursys seems to show better l2 and llc utilization(not seen in the above discussion).
-The instructions per packet seem to provide the correct answer.
+The instructions per packet seem to provide the correct answer. In addition the with an equal number of IRQs faster handling results in less IRQs per packet, resulting in less instructions per packet. Presumably there is also less work per IRQ but the overhead is not zero. Another way of putting it; batching is less effective.
 
 \begin{table*}
 \centering
 \begin{tabular}{l|r|r|r}
-Function & \oursys (3980)& vanilla (4736) & delta (756)\\\hline
+Function & \oursys (3980)& vanilla (4736) & delta (19\% 756)\\\hline
 csum\_partial\_copy\_generic* & 47.02\% (1871) & 35.24\% (1669)& -11\% -202\\
 udp\_send\_skb & 22.51\% (896)& 22.36\% (1059) & +18.2\% +163\\
 ret\_from\_intr & 11.09\% (441)& 20.03\% (949) & +115\% +508\\
