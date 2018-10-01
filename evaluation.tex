@@ -1,6 +1,6 @@
 \section{Evaluation}
 This section describes the in-depth analysis of 16 micro-benchmark experiments.
-The experiments are partitioned into for sections; single core/multi-core and TCP/UDP.
+The experiments are partitioned into four sections; single core/multi-core and TCP/UDP.
 On single core we evaluate TX/RX and RR on multi-core we evaluate TX/RX and Bi-Directional traffic.
 
 \input{eval_exec_summery.tex}
@@ -38,7 +38,47 @@ alloc\_skb\_with\_frags* & 0.12\% (4)& 0.09\% (4)& -\\
 other & 13.36\%(532)& 13.22\% (626)& +17.7\% +94\\\hline
 skb\_release\_all & 4.11\% (164) & 10.45\% (495)& +202\% +331\\\hline
 \end{tabular}
-\caption{\label{tab:s-u-tx-funcs_child}Function breakdown with child.}
+\caption{\label{tab:s-u-tx-funcs_child}Function breakdown with child.(single core)}
+\end{table*}
+
+\subsubsection{IRQ separation - UDP TX}
+The new allocation scheme has an impact both; on allocation that happens in the process context following a system call, and in IRQ context following a send completion event. We modify the single UDP experiment in such a way, that, the process is running on one core and all IRQs are handled on a second core on the same socket. This separation allows us to better gauge the effects of our code changes. Number are based on 36 runs.
+
+\subsubsection{sock\_alloc\_send\_skb**}
+This functions accounts for 40\% of the benifts we gain.
+The benefit comes not only from cutting down the instruction count, but also
+by faster freeing. In the unmodified kernel vanilla spends about 4\% waiting for space in the send buffer, which is "refilled" by the TX completions. These cycles account for 180 cycles per packet on average.
+Removing this check from the function increases performance from 44Gb/s to 49Gb/s.
+
+\subsubsection{Single core surprises}
+Add table with difference between single and dual core experiments.
+\begin{table}[]
+    \centering
+    \begin{tabular}{c|c|c|c}
+       Param & \oursys & vanilla & diff\\\hline
+        Freq GHZ & 3.137 & 3.134 & 0.09\%\\
+        packets & 845,993 & 693,809 & 21.93\%\\
+        irq & 56,224 & 58,201 & 3.51\%\\
+        CPU & 100\% + 31.78\% & 100\% + 35.64\%& --\\
+        IPC & 1.64 + 0.53 & 1.47 + 0.51 & --\\
+        L2 misses & 15M + 17M & 51M + 33M & --\\
+        cycles/packet & 3,708 & 4,517\\\hline
+    \end{tabular}
+    \caption{Run Parameters}
+    \label{tab:run_parameters_utx_2}
+\end{table}
+
+\begin{table*}
+\centering
+\begin{tabular}{l|r|r|r}
+Function & \oursys (3,708)& vanilla (4,517) & delta (21.82\%) 809\\\hline
+csum\_and\_copy\_from\_iter\_full & 50.4\% (1868 +/-32) & 40.49\% (1829 +/-45)& -39\\
+udp\_send\_skb & 24.08\% (893+/-35)& 20.25\% (915+/-21) &  +22\\
+sock\_wmalloc & 12.04\% (446+/-11) & 19.04\%(860+/-13) & +414\\
+sock\_alloc\_send\_skb** & 1.79\% (66+/-5)& 8.7\%(393+/-27) & +327\\
+other & 12.05\% (447)& 11.52\%(520)& +73 \\\hline
+\end{tabular}
+\caption{\label{tab:2-u-tx-funcs_child_}Function breakdown with child.(single core)}
 \end{table*}
 
 \subsection{Single UDP RR}

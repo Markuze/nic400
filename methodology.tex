@@ -19,9 +19,10 @@ sk\_stream\_alloc\_skb & TCP & TX\\
 \_\_napi\_alloc\_skb & core & TX\\
 skb\_copy* & core & TX \\
 skb\_segment & core & TX\\
-
-
 \hline
 \end{tabular}
 \caption{\label{tab:func_list}Modified Functions}
 \end{table*}
+
+\subsubsection{TX}
+On TX the send process starts from a system call, and then each message goes trough three phases; I routing + skb allocation II Copy and checksum and III udp send. We change the skb allocation function only. 
