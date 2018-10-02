@@ -48,7 +48,7 @@ The new allocation scheme has an impact both; on allocation that happens in the 
 This functions accounts for 40\% of the benifts we gain.
 The benefit comes not only from cutting down the instruction count, but also
 by faster freeing. In the unmodified kernel vanilla spends about 4\% waiting for space in the send buffer, which is "refilled" by the TX completions. These cycles account for 180 cycles per packet on average.
-Removing this check from the function increases performance from 44Gb/s to 49Gb/s.
+Removing this check from the function increases performance from 44Gb/s to 47Gb/s a 7.5\%.
 
 \subsubsection{Single core surprises}
 Add table with difference between single and dual core experiments.
