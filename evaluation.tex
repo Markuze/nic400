@@ -50,6 +50,22 @@ The benefit comes not only from cutting down the instruction count, but also
 by faster freeing. In the unmodified kernel vanilla spends about 4\% waiting for space in the send buffer, which is "refilled" by the TX completions. These cycles account for 180 cycles per packet on average.
 Removing this check from the function increases performance from 44Gb/s to 47Gb/s a 7.5\%.
 
+\subsection{Removing heavy hitters}
+\begin{table*}[]
+    \centering
+    \begin{tabular}{c|c|c|c|c}
+        Function & Job & Cycles & Memory Total (weight|samples)& L2 Misses\\\hline
+        get\_page\_from\_freelist & buddy & 8\%(361+/-5)& & 23.19\% | 14.41\%\\
+        \_\_zone\_watermark\_ok & buddy & 1.13\%(51+/-2) & & 7.1\% | 5.5\%\\
+        \_\_switch\_to & scheduler & 0.31\%(14 +/-13) & & 3.31\% | 4.52\%\\
+        update\_load\_avg & scheduler & 0.42\%(19 +/-12) & & 4.57\% | 3.63\%\\
+        \_\_sched\_text\_start & scheduler & 2.69\%(122+/-78)& & 2.95\% | 3.18\%\\
+        \_\_rmqueue & buddy & 1.29\% (58+/-4)& & 4.66\% | 2.71\%\\
+        \hline
+    \end{tabular}
+    \caption{Heavy hitters}
+    \label{tab:mem_cpu1}
+\end{table*}
 \subsubsection{Single core surprises}
 Add table with difference between single and dual core experiments.
 \begin{table}[]
