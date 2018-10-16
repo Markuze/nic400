@@ -20,15 +20,15 @@ state II fix: There were several changes introduced between 4.16 and 4.17. Eric 
 The fix was; increasing the number of buckets:
 sudo sh -c "echo 16000000000 >/proc/sys/net/ipv4/ipfrag\_high\_thresh"
 Result: 
-Driver started reporting on ~50Gb/s received packets while nrtserver was seeing about 25Gb/s. Due to packets lost in transit, ip\_defrag was now dropping packets that couldn't be reassembled. And yes, pause parameters are configured both on the sender and the receiver. The driver was now slower than the network and packets would get lost. 
+Driver started reporting on ~50Gb/s received packets while netserver was seeing about 25Gb/s. Due to packets lost in transit, ip\_defrag was now dropping packets that couldn't be reassembled. And yes, pause parameters are configured both on the sender and the receiver. The driver was now slower than the network and packets would get lost. 
 
 fix II: I've modified the test to send 8KB udp packets, more system calls but no need to defrag the packets.
 
 Result: Driver started reporting 42Gb/s received, with netserver reporting 38Gb/s.
-dropwatch was now poiting to udp\_enqueue. Increasing the receive socket size
+dropwatch was now pointing to udp\_enqueue. Increasing the receive socket size
 brought the netserver report up to 42Gb/s.
 The short version of the above is that three things needed to maintain sane UDP RX results. The first thing that must be fixed is the NET\_FLOW\_LIMIT issue, the second thing is the size of received packets and the third is the size of the UDP socket.
-The open question is; weather, its possible in software to decrease the number of lost fragments in flight. With PFC on this shouldnt have been an issue.
+The open question is; weather, its possible in software to decrease the number of lost fragments in flight. With PFC on this shouldn't have been an issue.
 
 \subsection{More Questions}
 Possible things that maybe beneficial to look at, table \ref{tab:open_issues}.
@@ -48,8 +48,14 @@ New Theory: Add triger to NAPI call with TX Ring watermarks? & Awsome for TX and
 Is send more used? & batching in send, could show up to +5\%\\
 TCP flows & why more than one flow needed to saturate single core?\\
 Is prefetch usefull&\\\hline
-
 \hline
 \end{tabular}
 \caption{\label{tab:open_issues}Open issues}
 \end{table*}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=1\textwidth]{figures/zoned_memory.png}
+    \caption{Zoned memory allocator}
+    \label{fig:zoned_memory_alloc}
+\end{figure*}

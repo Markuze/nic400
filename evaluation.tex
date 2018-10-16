@@ -55,12 +55,13 @@ Removing this check from the function increases performance from 44Gb/s to 47Gb/
     \centering
     \begin{tabular}{c|c|c|c|c}
         Function & Job & Cycles & Memory Total (weight|samples)& L2 Misses\\\hline
-        get\_page\_from\_freelist & buddy & 8\%(361+/-5)& & 23.19\% | 14.41\%\\
-        \_\_zone\_watermark\_ok & buddy & 1.13\%(51+/-2) & & 7.1\% | 5.5\%\\
-        \_\_switch\_to & scheduler & 0.31\%(14 +/-13) & & 3.31\% | 4.52\%\\
-        update\_load\_avg & scheduler & 0.42\%(19 +/-12) & & 4.57\% | 3.63\%\\
-        \_\_sched\_text\_start & scheduler & 2.69\%(122+/-78)& & 2.95\% | 3.18\%\\
-        \_\_rmqueue & buddy & 1.29\% (58+/-4)& & 4.66\% | 2.71\%\\
+        get\_page\_from\_freelist & buddy & 8\%(361+/-5)& 9.19\% | 2.36\%& 23.19\% | 14.41\%\\
+        \_\_zone\_watermark\_ok & buddy & 1.13\%(51+/-2) & 0.52\%| 0.47\%& 7.1\% | 5.5\%\\
+        \_\_switch\_to & scheduler & 0.31\%(14 +/-13) & 0.63\% | 0.14\%& 3.31\% | 4.52\%\\
+        update\_load\_avg & scheduler & 0.42\%(19 +/-12) & 0.82\% | 0.2\%& 4.57\% | 3.63\%\\
+        \_\_sched\_text\_start & scheduler & 2.69\%(122+/-78)& 0.45\%|0.13\%& 2.95\% | 3.18\%\\
+        \_\_rmqueue & buddy & 1.29\% (58+/-4)& 0.95\%| 0.66\%& 4.66\% | 2.71\%\\
+        ksize & buddy* & 1.86 (84+/-4)\% & 1.67\%|0.25\%& 0.92\%|0.92\%\\
         \hline
     \end{tabular}
     \caption{Heavy hitters}
