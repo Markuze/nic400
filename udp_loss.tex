@@ -29,33 +29,3 @@ dropwatch was now pointing to udp\_enqueue. Increasing the receive socket size
 brought the netserver report up to 42Gb/s.
 The short version of the above is that three things needed to maintain sane UDP RX results. The first thing that must be fixed is the NET\_FLOW\_LIMIT issue, the second thing is the size of received packets and the third is the size of the UDP socket.
 The open question is; weather, its possible in software to decrease the number of lost fragments in flight. With PFC on this shouldn't have been an issue.
-
-\subsection{More Questions}
-Possible things that maybe beneficial to look at, table \ref{tab:open_issues}.
-\begin{table*}
-\centering
-\begin{tabular}{l|l}
-Issue & difficulty/impact \\\hline
-Huge pages in \oursys & Few days of work expected <+5\% improved performance \\
-Inline functions & a known issue in the Linux community, a small study maybe in order\\
-PFC & PFC has an impact on TCP performance, never looked at why\\
-ad hoc driver memory reuse & motivation?\\
-ad hoc NAPI budget & minor but could be interesting\\
-UDP fragment losses & Not sure there is a resolution in SW\\
-lock in TX queue & if were dealing with locks alreaady...\\
-coalescing & with higher rates may be its time to reveisit?\\
-New Theory: Add triger to NAPI call with TX Ring watermarks? & Awsome for TX and should also work for TCP\\
-Is send more used? & batching in send, could show up to +5\%\\
-TCP flows & why more than one flow needed to saturate single core?\\
-Is prefetch usefull&\\\hline
-\hline
-\end{tabular}
-\caption{\label{tab:open_issues}Open issues}
-\end{table*}
-
-\begin{figure*}
-    \centering
-    \includegraphics[width=1\textwidth]{figures/zoned_memory.png}
-    \caption{Zoned memory allocator}
-    \label{fig:zoned_memory_alloc}
-\end{figure*}
