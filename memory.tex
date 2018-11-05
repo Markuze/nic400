@@ -18,14 +18,26 @@ ad hoc driver memory reuse & motivation?\\
 PFC & PFC has an impact on TCP performance, never looked at why\\
 \hline
 \end{tabular}
-
-
 \caption{\label{tab:open_issues}Open issues}
 \end{table*}
 
+\subsection{Memory allocator}
+The Linux memory allocator, is an all purpose allocator that must cater to a multitude of scenarios. The allocator needs to deal with issues like;
+\begin{itemize}
+    \item Fragmentation
+    \item Page migration (user-space migrating to other NODE)
+    \item Zones 
+    \item recursive allocations (alloc code that needs to alloc code)
+    \item variable sizes
+\end{itemize}
+
+The hierarchy of data structures associated with a zoned memory allocator are shown in figure \ref{fig:zoned_memory_alloc}.
 \begin{figure*}
     \centering
     \includegraphics[width=1\textwidth]{figures/zoned_memory.png}
     \caption{Zoned memory allocator}
     \label{fig:zoned_memory_alloc}
 \end{figure*}
+
+Our dedicated layered \oursys system. Always allocates elements of 64KB.
+This allows to satisfy any allocation needed for network I/O, due to 16 bit used for packet size in IP. For smaller allocations we use the page frag mechanism to allow for a fast, byte granular allocation. We can always assume that small elements allocated together will be freed around the same time. 

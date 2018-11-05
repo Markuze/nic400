@@ -29,3 +29,27 @@ dropwatch was now pointing to udp\_enqueue. Increasing the receive socket size
 brought the netserver report up to 42Gb/s.
 The short version of the above is that three things needed to maintain sane UDP RX results. The first thing that must be fixed is the NET\_FLOW\_LIMIT issue, the second thing is the size of received packets and the third is the size of the UDP socket.
 The open question is; weather, its possible in software to decrease the number of lost fragments in flight. With PFC on this shouldn't have been an issue.
+
+With DAMN, nothing seems to help. The RX counetrs show 95Gb/s, but about 90\% of those are dropped at \newline udp\_queue\_rcv\_skb. /proc/net/snmp is showing InErrors on RevbufErrors, this is inherent to ENOMEM error in \newline \_\_udp\_queue\_rcv\_skb. The difference stems from the speed of freed/recycled memory. The difference is seen in the delta between rx\_packets and rx\_packets\_phy, in our experiments the discrepancy is found in rx\_out\_of\_buffer ethtool counter, namely those packets that were dropped by the driver due to a lack of memory.  
+\subsection{UDP}
+\begin{itemize}
+    \item Performance degradation at 4.18
+    \begin{itemize}
+        \item UDP RX effective RX is 50Mb/s
+        \item UDP TX is 30GB/s vs 45Gb/s in 4.14
+    \end{itemize}
+    \item Damn with fragments - decreasing the sock size increases performance
+    
+\end{itemize}
+Next Questions:
+\begin{itemize}
+    \item 64KB RX on Damn, where are the packets lost?
+    \item budget limiting.
+    \item schedule napi on TX, no IRQ.
+\end{itemize}
+\subsection{proc utilities}
+https://www.kernel.org/doc/Documentation/sysctl/net.txt.
+Q: Would, experiments with netdev\_budget\_usecs balance userspace/napi better.
+Lowering usec to 50 usec and budget to 4, has no effect.
+\subsection{IRQ observations}
+TX traffic, TCP and UDP, generates around 50K irqs per sec. This is due to the fact that only RX packets are counted for napi budget. TCP RX generates around 25K irqs per second, with 30 packets handled on average.  
